@@ -1,3 +1,10 @@
+/*
+
+  # Author : Watchara Pongsri
+  # [github/X-c0d3] https://github.com/X-c0d3/
+  # Web Site: https://wwww.rockdevper.com
+
+*/
 
 #ifndef LINE_NOTIFY_H
 #define LINE_NOTIFY_H

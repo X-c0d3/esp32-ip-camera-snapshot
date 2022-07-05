@@ -1,3 +1,11 @@
+/*
+
+  # Author : Watchara Pongsri
+  # [github/X-c0d3] https://github.com/X-c0d3/
+  # Web Site: https://wwww.rockdevper.com
+
+*/
+
 #ifndef FIRMWARE_H
 #define FIRMWARE_H
 
