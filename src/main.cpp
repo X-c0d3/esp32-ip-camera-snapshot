@@ -38,7 +38,7 @@ void sendLineNotify() {
         Serial.printf("[HTTP] GET... code: %d\n", httpCode);
         Serial.printf("[FILE] open file for writing %d\n", fileName.c_str());
 
-        // File file = SPIFFS.open(fileName, "w");
+        File file = SPIFFS.open(fileName, "w");
 
         // file found at server
         if (httpCode == HTTP_CODE_OK) {
