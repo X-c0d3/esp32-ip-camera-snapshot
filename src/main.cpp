@@ -28,22 +28,22 @@ auto timer = timer_create_default();  // create a timer with default settings
 Timer<> default_timer;                // save as above
 hw_timer_t* watchdogTimer = NULL;
 
+int senseDoorbell = 0;
+int debounce = 1000;
+unsigned long currentMillis = 0;
+unsigned long prevRing = 0;
+
 void event(uint8_t* payload, size_t length) {
     DynamicJsonDocument doc(1024);
     DeserializationError error = deserializeJson(doc, payload);
     if (error)
         return;
 
-    // String output;
-    // serializeJsonPretty(doc, output);
-    // Serial.println("[Json Output]: " + output);
-
     String action = doc[1]["action"];
     unsigned long currentMillis = millis();  // grab current time
     if (action != "null") {
         String state = doc[1]["payload"]["state"];
         String messageInfo = doc[1]["payload"]["messageInfo"];
-        bool isAuto = doc[1]["payload"]["isAuto"];
 
         if ((unsigned long)(currentMillis - previousMillis) >= interval) {
             if (ENABLE_DEBUG_MODE) {
@@ -53,13 +53,14 @@ void event(uint8_t* payload, size_t length) {
             // if (action == "ENERGY_RESET")
             //     pzem04t.resetEnergy();
 
-            // save the "current" time
+            // Do something in here
+
             previousMillis = currentMillis;
         }
     }
 }
 
-void sendLineNotify(String message) {
+void takeSnapshot(String message) {
     digitalWrite(LED_BUILTIN, HIGH);
     HTTPClient http;
     http.begin("http://" + String(IPCAM_IP) + ":" + String(IPCAM_PORT) + "/snapshot.cgi?user=" + String(IPCAM_USERNAME) + "&pwd=" + String(IPCAM_PASSWORD));
@@ -82,9 +83,10 @@ void sendLineNotify(String message) {
     digitalWrite(LED_BUILTIN, LOW);
 }
 
+// For testing
 void onPressed() {
     Serial.println("capture");
-    sendLineNotify("Testing take snapshot from Ipcam");
+    takeSnapshot("☃ มีผู้มาเยือน ☃ \r\n" + printLocalTime());
 }
 
 void IRAM_ATTR interruptReboot() {
@@ -157,8 +159,10 @@ void setup() {
     pinMode(LED_BUILTIN, OUTPUT);
     digitalWrite(LED_BUILTIN, LOW);
 
+    pinMode(CURRENT_SENSOR_PIN, INPUT);
     // Connect WIFI
     setup_Wifi();
+    setupTimeZone();
 
     btnReset.begin();
     btnReset.onPressed(onPressed);
@@ -188,6 +192,17 @@ void loop() {
         timerWrite(watchdogTimer, 0);  // reset timer (feed watchdog)
 
         webSocket.loop();
+
+        currentMillis = millis();
+        if (currentMillis - prevRing >= debounce) {
+            senseDoorbell = analogRead(CURRENT_SENSOR_PIN);
+            // detecting doolbell from current sensor
+            if (senseDoorbell > 50) {
+                Serial.println("DingDong : Value is " + String(senseDoorbell));
+                takeSnapshot("☃ มีผู้มาเยือน ☃ \r\n" + printLocalTime());
+                prevRing = currentMillis;
+            }
+        }
     }
 
     btnReset.read();

@@ -18,6 +18,21 @@ char ntp_server3[20] = "time.uni.net.th";
 int timezone = 7 * 3600;  // timezone for Thailand is +7
 int dst = 0;
 
+String printLocalTime() {
+    struct tm timeinfo;
+    if (!getLocalTime(&timeinfo)) {
+        Serial.println("Failed to obtain time");
+        return "";
+    }
+
+    char timeStringBuff[50];  // 50 chars should be enough
+    strftime(timeStringBuff, sizeof(timeStringBuff), "%A, %d/%B/%Y %H:%M:%S", &timeinfo);
+
+    // Optional: Construct String object
+    //  String asString(timeStringBuff);
+    return timeStringBuff;
+}
+
 void printMessage(int X, int Y, String message, bool isPrintLn) {
     if (isPrintLn)
         Serial.println(message);
@@ -27,7 +42,8 @@ void printMessage(int X, int Y, String message, bool isPrintLn) {
 
 String NowString() {
     time_t now = time(nullptr);
-    struct tm *newtime = localtime(&now);
+    struct tm* newtime = localtime(&now);
+
     String tmpNow = "";
     tmpNow += String(newtime->tm_hour);
     tmpNow += ":";

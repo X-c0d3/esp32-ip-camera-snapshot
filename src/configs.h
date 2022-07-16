@@ -18,8 +18,8 @@
 #define IPCAM_USERNAME "admin"
 #define IPCAM_PASSWORD "1234567"
 
-#define FIRMWARE_VERSION "1.0.4"
-#define FIRMWARE_LASTUPDATE "2022-06-29"
+#define FIRMWARE_VERSION "1.0.5"
+#define FIRMWARE_LASTUPDATE "2022-07-17"
 #define FIRMWARE_SERVER "https://www.xxxxxx.com/firmware/firmware.json"
 
 #define ENABLE_DEBUG_MODE true
@@ -32,5 +32,7 @@
 
 #define MAX_WORLD_COUNT 140
 #define MIN_WORLD_COUNT 5
+
+#define CURRENT_SENSOR_PIN A0
 
 #endif
